@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_CATEGORIES_INTRO_TITLE_FORM_VIEW_CATEGORIES" option="View">
+        <message>
+                        <![CDATA[COM_CATEGORIES_INTRO_TITLE_FORM_VIEW_CATEGORIES_DESC]]>
+        </message>
+    </layout>
+    <fields name="params">
+        <fieldset name="basic" label="COM_CATEGORIES_INTRO">
+            <field name="tags" type="tag" label="JTAG" description="JTAG_DESC" mode="ajax" class="inputbox span12 small" multiple="false" />
+            <field name="imagewidth" type="number" label="COM_CATEGORIES_IMAGE_WIDTH" description="COM_CATEGORIES_IMAGE_WIDTH"  />
+        </fieldset>
+    </fields>
+</metadata>

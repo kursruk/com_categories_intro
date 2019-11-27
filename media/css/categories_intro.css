@@ -1,0 +1,23 @@
+/**
+ * @version     CVS: 1.0.0
+ * @package     com_categories_intro
+ * @copyright   2019 kursruk
+ * @license     GNU General Public License версии 2 или более поздней; Смотрите LICENSE.txt
+ * @author      kursruk <kursruk@gmail.com>
+ */
+
+ .categories-img-list {
+    text-align: center;
+ }
+
+ .category-desc {
+     padding: 10pt;
+ }
+
+ .category-item {
+     display: inline-block;
+     vertical-align:top;
+     margin-right: 8pt;
+     text-align: left;
+     cursor: pointer;
+ }

@@ -158,7 +158,7 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 	  
 			
 		$this->document->addScript(Juri::base()."media/com_categories_intro/js/categories_intro.js?v2");
-		$this->document->addStyleSheet(Juri::base()."media/com_categories_intro/css/categories_intro.css?v3");
+		$this->document->addStyleSheet(Juri::base()."media/com_categories_intro/css/categories_intro.css?v4");
 
 		$db = JFactory::getDbo();
 
@@ -188,8 +188,12 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 			$imf = $im->image;			
 			if ($imf!=='')
 			{	$img->src = $imf;
-				$img->resized = $this->retResizedImage($imf, $this->params->get('imagewidth') );
-				$img->height = getimagesize($img->resized)[1];
+				if ($this->params->get('resizeimage'))
+				{	$img->resized = $this->retResizedImage($imf, $this->params->get('imagewidth') );
+					$img->height = getimagesize($img->resized)[1];
+				} else 
+				{	$img->resized = $img->src;
+				}
 			}
 		}
 

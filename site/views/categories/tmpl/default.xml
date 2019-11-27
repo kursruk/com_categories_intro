@@ -8,7 +8,16 @@
     <fields name="params">
         <fieldset name="basic" label="COM_CATEGORIES_INTRO">
             <field name="tags" type="tag" label="JTAG" description="JTAG_DESC" mode="ajax" class="inputbox span12 small" multiple="false" />
-            <field name="imagewidth" type="number" label="COM_CATEGORIES_IMAGE_WIDTH" description="COM_CATEGORIES_IMAGE_WIDTH"  />
+            <field name="resizeimage" 
+				type="list"
+				label="COM_CATEGORIES_RESIZEIMAGE"
+				description="COM_CATEGORIES_RESIZEIMAGE"	
+				>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+            <field name="columnmargin" type="number" label="COM_CATEGORIES_COLUMN_MARGIN" description="COM_CATEGORIES_COLUMN_MARGIN" default="8" />
+            <field name="imagewidth" type="number" label="COM_CATEGORIES_IMAGE_WIDTH" description="COM_CATEGORIES_IMAGE_WIDTH" default="300" />
         </fieldset>
     </fields>
 </metadata>

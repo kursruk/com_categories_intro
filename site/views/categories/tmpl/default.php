@@ -18,6 +18,8 @@ echo  '<h1 class="item_title">'.JFactory::getApplication()->getMenu()->getActive
 ?>
 <style type="text/css">
 	.category-item {
+		margin-right: <?=$this->params->get('columnmargin')?>pt;
+		margin-bottom: <?=$this->params->get('columnmargin')?>pt;
 		width: <?=$this->params->get('imagewidth')?>px;
 	}
 </style>

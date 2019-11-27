@@ -7,7 +7,7 @@
  */
 
  .categories-img-list {
-    text-align: center;
+    text-align: left;
  }
 
  .category-desc {
@@ -17,7 +17,7 @@
  .category-item {
      display: inline-block;
      vertical-align:top;
-     margin-right: 8pt;
+     /* margin-right: 8pt; */
      text-align: left;
      cursor: pointer;
  }

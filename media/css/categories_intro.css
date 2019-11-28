@@ -28,7 +28,9 @@
 
  .articles > .article  img {
       max-width: 40%;
-      max-height: 200px;      
+      max-height: 200px; 
+      float: left;
+      padding-right: 15pt;     
  }
 
  .articles > .article a.btn {

@@ -339,7 +339,7 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 	  
 			
 		$this->document->addScript(Juri::base()."media/com_categories_intro/js/categories_intro.js?v2");
-		$this->document->addStyleSheet(Juri::base()."media/com_categories_intro/css/categories_intro.css?v5");
+		$this->document->addStyleSheet(Juri::base()."media/com_categories_intro/css/categories_intro.css?v6");
 		$this->task = $app->input->get('task');
 		$this->id = $app->input->get('id');
 		$this->view = $app->input->get('view');

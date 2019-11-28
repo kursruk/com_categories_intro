@@ -40,3 +40,9 @@
 .articles > .article a.btn {
     margin-top: 8pt;
 }
+
+.articles > .article .abstract
+{
+    padding-left: none;
+    padding-right: none;
+}

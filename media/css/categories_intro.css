@@ -21,3 +21,7 @@
      text-align: left;
      cursor: pointer;
  }
+
+ .articles > .article 
+ { margin-bottom: 30pt;
+ }

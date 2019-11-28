@@ -26,12 +26,15 @@
  { margin-bottom: 30pt;
  }
 
-  .articles > .article  img {
+ .articles > .article  img {
       max-width: 40%;
       max-height: 200px;      
-  }
+ }
 
-  .articles > .article a.btn {
+ .articles > .article a.btn {
       margin-top: 8pt;
-  }
-  
+ }
+
+.articles > .article a.btn {
+    margin-top: 8pt;
+}

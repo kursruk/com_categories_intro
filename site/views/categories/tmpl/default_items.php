@@ -19,7 +19,8 @@ JHtml::_('bootstrap.tooltip');
 		$img = '';
 		if ($imf!='') $img="<img src=\"$imf\" >";
 		echo '<div class="article"><h3>'.$r->title.'</h3><div>'.$img.$r->introtext.'</div>'
-		.'<a class="btn btn-primary" href="#">Read more</a>'
+		.'<div style="clear:both"></div>'
+		.'<a class="btn btn-primary" href="articles/'.$r->id.'-'.$r->alias.'">Read more</a>'
 		.'</div>';
 	}
 	echo '</div>';

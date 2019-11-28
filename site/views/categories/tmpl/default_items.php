@@ -13,10 +13,11 @@ JHtml::_('bootstrap.tooltip');
 	echo '<div class="articles">';
 	//print_r($this->category);
 	foreach ($this->items as $r) {
+
 		if ($r->images!='') $im = json_decode($r->images);
 		$imf = $im->image_intro;
 		$img = '';
-		if ($imf!='') $img="<img src=\"$img\" >";
+		if ($imf!='') $img="<img src=\"$imf\" >";
 		echo '<div class="article"><h3>'.$r->title.'</h3><div>'.$img.$r->introtext.'</div>'
 		.'<a class="btn btn-primary" href="#">Read more</a>'
 		.'</div>';

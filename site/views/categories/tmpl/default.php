@@ -13,6 +13,11 @@ use \Joomla\CMS\HTML\HTMLHelper;
 use \Joomla\CMS\Factory;
 
 // $heading = $this->params->get('show_page_heading',1);
+echo \Joomla\CMS\Router\Route::_('index.php?view=categories&id=new&catid=20&task=save');
+echo "Task: $this->task<br>";
+echo "ID: $this->id<br>";
+echo "View: $this->view<br>";
+
 echo  '<h1 class="item_title">'.JFactory::getApplication()->getMenu()->getActive()->title.'</h1>';
 // echo  '<div class="item_title">'.$this->params->get('fotomotodescription').'</div>';
 ?>
@@ -46,7 +51,3 @@ echo  '<h1 class="item_title">'.JFactory::getApplication()->getMenu()->getActive
 ?>
 	<div style="clear:both"></div>
 </div>
-
-
-
-

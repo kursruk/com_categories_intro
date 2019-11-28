@@ -35,19 +35,12 @@ class Categories_introRouter extends \Joomla\CMS\Component\Router\RouterBase
 		$segments = array();
 		$view     = null;
 
-		if (isset($query['task']))
-		{
-			$taskParts  = explode('.', $query['task']);
-			$segments[] = implode('/', $taskParts);
-			$view       = $taskParts[0];
-			unset($query['task']);
-		}
 
 		if (isset($query['view']))
-		{
-			$segments[] = $query['view'];
-			$view = $query['view'];
-			
+		{	if ($query['view']!=='categories')
+			{	$segments[] = $query['view'];				
+			}
+			$view = $query['view'];				
 			unset($query['view']);
 		}
 
@@ -63,6 +56,14 @@ class Categories_introRouter extends \Joomla\CMS\Component\Router\RouterBase
 			}
 
 			unset($query['id']);
+		}
+
+		if (isset($query['task']))
+		{
+			$taskParts  = explode('.', $query['task']);
+			$segments[] = implode('/', $taskParts);
+			$view       = $taskParts[0];
+			unset($query['task']);
 		}
 
 		return $segments;
@@ -84,23 +85,9 @@ class Categories_introRouter extends \Joomla\CMS\Component\Router\RouterBase
 		$vars = array();
 
 		// View is always the first element of the array
-		$vars['view'] = array_shift($segments);
-		$model        = Categories_introHelpersCategories_intro::getModel($vars['view']);
-
-		while (!empty($segments))
-		{
-			$segment = array_pop($segments);
-
-			// If it's the ID, let's put on the request
-			if (is_numeric($segment))
-			{
-				$vars['id'] = $segment;
-			}
-			else
-			{
-				$vars['task'] = $vars['view'] . '.' . $segment;
-			}
-		}
+		$vars['view'] = 'categories';
+		$vars['id'] = array_shift($segments);
+		$vars['task'] = array_shift($segments);
 
 		return $vars;
 	}

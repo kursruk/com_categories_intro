@@ -61,8 +61,15 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		
 
 		$this->_prepareDocument();
-
-		parent::display($tpl);
+		if ($this->id!='') {
+			$this->maxLevelcat = 1;			
+			$this->getIntroArticles();
+			parent::display('items');
+		} else {
+			$this->getIntroItems();
+			parent::display($tpl);
+		}
+		
 	}
 
 	function retResizedImage($imagePath, $new_width=450)
@@ -96,6 +103,128 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		}
 		imagedestroy($imageResized);
 		return $fullPath;
+	}
+
+	function getIntroArticles() {
+		$db = JFactory::getDbo();
+
+		// Create a new query object.
+		$query = $db->getQuery(true);
+
+		$query->select( ['count(*) as t'] )
+		->from($db->quoteName('#__categories', 'c'))
+		->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm') 
+		." ON m.content_item_id=c.id AND m.type_alias='com_content.category' ")
+		->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm2') 
+		." ON m2.tag_id = m.tag_id AND m2.type_alias='com_content.article' ")
+		->join('INNER', $db->quoteName('#__content', 'a') 
+		." on a.id = m2.content_item_id ")
+		->where(
+			$db->quoteName('c.alias') . ' = ' . $db->quote($this->id)
+			.' AND a.state=1 and a.publish_down<=current_timestamp');
+	
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);		
+
+
+
+		$query = $db->getQuery(true);
+		$total = $db->loadResult();
+
+		if ($total>0)
+		{
+
+/*		
+		select 
+    a.id,
+    a.title,
+    a.alias,    
+    a.introtext, 
+    a.images,
+    a.publish_up
+from ja_categories c
+join ja_contentitem_tag_map m on 
+    m.type_alias='com_content.category' and m.content_item_id=c.id
+join ja_contentitem_tag_map m2 on m2.type_alias='com_content.article' and
+    m2.tag_id = m.tag_id
+join ja_content a on a.id = m2.content_item_id
+where c.alias='category-2' and a.state=1 and a.publish_down<=current_timestamp
+order by a.publish_up desc;
+*/
+
+		// $app = Factory::getApplication();
+		$lim	= 14; // $app->getUserStateFromRequest("$option.limit", 'limit', 14, 'int'); //I guess getUserStateFromRequest is for session or different reasons
+		$lim0	= JRequest::getVar('limitstart', 0, '', 'int');
+
+		$query->select( ['a.id', 'a.title', 'a.alias', 'a.introtext', 
+				'a.images',	'a.publish_up' ] )
+				->from($db->quoteName('#__categories', 'c'))
+				->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm') 
+				." ON m.content_item_id=c.id AND m.type_alias='com_content.category' ")
+				->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm2') 
+				." ON m2.tag_id = m.tag_id AND m2.type_alias='com_content.article' ")
+				->join('INNER', $db->quoteName('#__content', 'a') 
+				." on a.id = m2.content_item_id ")
+				->where(
+					$db->quoteName('c.alias') . ' = ' . $db->quote($this->id)
+					.' AND a.state=1 and a.publish_down<=current_timestamp')
+				->order(' a.publish_up desc')
+				->setLimit($lim, $lim0); // limit, offset
+			
+			// Reset the query using our newly populated query object.
+			$db->setQuery($query);
+					
+			// if (empty($rL)) {$jAp->enqueueMessage($db->getErrorMsg(),'error'); return;}	
+			jimport('joomla.html.pagination');
+			$this->items = $db->loadObjectList();
+			$this->pageNav = new JPagination($total, $lim0, $lim );
+
+		}
+		
+	}
+	
+	function getIntroItems() {
+		$db = JFactory::getDbo();
+
+		// Create a new query object.
+		$query = $db->getQuery(true);
+
+		$query
+			->select( ['c.id','c.title','c.description', 'c.alias', 'c.params' ] )
+			->from($db->quoteName('#__contentitem_tag_map', 'm'))
+			->join('INNER', $db->quoteName('#__categories', 'c') 
+			. ' ON ' . $db->quoteName('m.content_item_id') . ' = ' . $db->quoteName('c.id'))
+			->where(
+				$db->quoteName('m.type_alias') . ' = ' . $db->quote('com_content.category')
+				.' AND '.$db->quoteName('m.tag_id') . ' = ' . $db->quote($this->params->get('tags'))
+			)
+			->order($db->quoteName('c.note') . ' ASC');
+
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+
+		// // Load the results as a list of stdClass objects (see later for more options on retrieving data).
+		
+		$this->items = $db->loadObjectList();
+
+		foreach($this->items as $img)
+		{ 	$im = json_decode( $img->params );
+			$imf = $im->image;			
+			if ($imf!=='')
+			{	$img->src = $imf;
+				if ($this->params->get('resizeimage'))
+				{	$img->resized = $this->retResizedImage($imf, $this->params->get('imagewidth') );
+					$img->height = getimagesize($img->resized)[1];
+				} else 
+				{	$img->resized = $img->src;
+				}
+			}
+		}
+
+		// usort($this->items, function($a, $b) { 
+		// 	return $a->height-$b->height;
+		// });
+
 	}
 
 	/**
@@ -159,46 +288,9 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 			
 		$this->document->addScript(Juri::base()."media/com_categories_intro/js/categories_intro.js?v2");
 		$this->document->addStyleSheet(Juri::base()."media/com_categories_intro/css/categories_intro.css?v4");
+		$this->task = $app->input->get('task');
+		$this->id = $app->input->get('id');
+		$this->view = $app->input->get('view');
 
-		$db = JFactory::getDbo();
-
-		// Create a new query object.
-		$query = $db->getQuery(true);
-
-		$query
-			->select( ['c.id','c.title','c.description', 'c.alias', 'c.params' ] )
-			->from($db->quoteName('#__contentitem_tag_map', 'm'))
-			->join('INNER', $db->quoteName('#__categories', 'c') 
-			. ' ON ' . $db->quoteName('m.content_item_id') . ' = ' . $db->quoteName('c.id'))
-			->where(
-				$db->quoteName('m.type_alias') . ' = ' . $db->quote('com_content.category')
-				.' AND '.$db->quoteName('m.tag_id') . ' = ' . $db->quote($this->params->get('tags'))
-			)
-			->order($db->quoteName('c.note') . ' ASC');
-
-		// Reset the query using our newly populated query object.
-		$db->setQuery($query);
-
-		// // Load the results as a list of stdClass objects (see later for more options on retrieving data).
-		
-		$this->items = $db->loadObjectList();
-
-		foreach($this->items as $img)
-		{ 	$im = json_decode( $img->params );
-			$imf = $im->image;			
-			if ($imf!=='')
-			{	$img->src = $imf;
-				if ($this->params->get('resizeimage'))
-				{	$img->resized = $this->retResizedImage($imf, $this->params->get('imagewidth') );
-					$img->height = getimagesize($img->resized)[1];
-				} else 
-				{	$img->resized = $img->src;
-				}
-			}
-		}
-
-		// usort($this->items, function($a, $b) { 
-		// 	return $a->height-$b->height;
-		// });
 	}
 }

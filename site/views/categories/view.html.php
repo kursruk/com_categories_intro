@@ -105,12 +105,39 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		return $fullPath;
 	}
 
-	function getIntroArticles() {
-		$db = JFactory::getDbo();
-
-		// Create a new query object.
+	function getAllArticles ($db, $lim0, $lim) 
+	{
 		$query = $db->getQuery(true);
+		$query->select( ['count(*) as t'] )
+		->from($db->quoteName('#__content', 'a'))
+		->where(' a.state=1 and a.publish_down<=current_timestamp ');
+	
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query);
 
+		$query = $db->getQuery(true);
+		$total = $db->loadResult();
+
+		if ($total>0)
+		{
+
+		// $app = Factory::getApplication();
+
+		$query->select( ['a.id', 'a.title', 'a.alias', 'a.introtext', 
+				'a.images',	'a.publish_up' ] )
+				->from($db->quoteName('#__content', 'a'))
+				->where(' a.state=1 and a.publish_down<=current_timestamp ')
+				->order(' a.publish_up desc')
+				->setLimit($lim, $lim0); // limit, offset
+			
+			// Reset the query using our newly populated query object.
+			$db->setQuery($query);
+		}		
+		return $total;
+	}
+
+	function getArticlesByTags($db, $lim0, $lim) 
+	{	$query = $db->getQuery(true);
 		$query->select( ['count(*) as t'] )
 		->from($db->quoteName('#__categories', 'c'))
 		->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm') 
@@ -121,12 +148,10 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		." on a.id = m2.content_item_id ")
 		->where(
 			$db->quoteName('c.alias') . ' = ' . $db->quote($this->id)
-			.' AND a.state=1 and a.publish_down<=current_timestamp');
+			.' AND a.state=1 and a.publish_down<=current_timestamp ');
 	
 		// Reset the query using our newly populated query object.
-		$db->setQuery($query);		
-
-
+		$db->setQuery($query);
 
 		$query = $db->getQuery(true);
 		$total = $db->loadResult();
@@ -134,27 +159,25 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		if ($total>0)
 		{
 
-/*		
-		select 
-    a.id,
-    a.title,
-    a.alias,    
-    a.introtext, 
-    a.images,
-    a.publish_up
-from ja_categories c
-join ja_contentitem_tag_map m on 
-    m.type_alias='com_content.category' and m.content_item_id=c.id
-join ja_contentitem_tag_map m2 on m2.type_alias='com_content.article' and
-    m2.tag_id = m.tag_id
-join ja_content a on a.id = m2.content_item_id
-where c.alias='category-2' and a.state=1 and a.publish_down<=current_timestamp
-order by a.publish_up desc;
-*/
+		/*		
+				select 
+			a.id,
+			a.title,
+			a.alias,    
+			a.introtext, 
+			a.images,
+			a.publish_up
+		from ja_categories c
+		join ja_contentitem_tag_map m on 
+			m.type_alias='com_content.category' and m.content_item_id=c.id
+		join ja_contentitem_tag_map m2 on m2.type_alias='com_content.article' and
+			m2.tag_id = m.tag_id
+		join ja_content a on a.id = m2.content_item_id
+		where c.alias='category-2' and a.state=1 and a.publish_down<=current_timestamp
+		order by a.publish_up desc;
+		*/
 
 		// $app = Factory::getApplication();
-		$lim	= 14; // $app->getUserStateFromRequest("$option.limit", 'limit', 14, 'int'); //I guess getUserStateFromRequest is for session or different reasons
-		$lim0	= JRequest::getVar('limitstart', 0, '', 'int');
 
 		$query->select( ['a.id', 'a.title', 'a.alias', 'a.introtext', 
 				'a.images',	'a.publish_up' ] )
@@ -173,14 +196,45 @@ order by a.publish_up desc;
 			
 			// Reset the query using our newly populated query object.
 			$db->setQuery($query);
-					
+		}		
+		return $total;
+	}
+
+	function getIntroArticles() 
+	{
+		$db = JFactory::getDbo();
+
+		// Find the Category
+		$query = $db->getQuery(true);		
+		$db->setQuery('select id, title from #__categories where alias='.$db->quote($this->id));	
+		$this->category = $db->loadObject();
+
+		if (!empty($this->category))
+		{
+			$query = $db->getQuery(true);		
+			$db->setQuery('select count(*) from #__contentitem_tag_map '
+			." where content_item_id=".$db->quote($this->category->id)." AND type_alias='com_content.category'");
+			$tag_count = $this->category = $db->loadResult();
+			
+			
+			// Create a new query object.
+			$lim	= 7; // $app->getUserStateFromRequest("$option.limit", 'limit', 14, 'int'); //I guess getUserStateFromRequest is for session or different reasons
+			$lim0	= JRequest::getVar('limitstart', 0, '', 'int');
+			
+			if ($tag_count>0)
+			{	$total = $this->getArticlesByTags($db, $lim0, $lim);
+			} else
+			{
+				$total = $this->getAllArticles($db, $lim0, $lim);
+			}
+									
 			// if (empty($rL)) {$jAp->enqueueMessage($db->getErrorMsg(),'error'); return;}	
 			jimport('joomla.html.pagination');
 			$this->items = $db->loadObjectList();
 			$this->pageNav = new JPagination($total, $lim0, $lim );
 
 		}
-		
+					
 	}
 	
 	function getIntroItems() {

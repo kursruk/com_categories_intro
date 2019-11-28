@@ -43,6 +43,6 @@
 
 .articles > .article .abstract
 {
-    padding-left: none;
-    padding-right: none;
+    padding-left: 0;
+    padding-right: 10pt;
 }

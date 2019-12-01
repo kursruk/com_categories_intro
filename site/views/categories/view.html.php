@@ -57,7 +57,7 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		// {
 		// 	throw new Exception(implode("\n", $errors));
 		// }
-
+		$this->items = [];
 		$this->_prepareDocument();
 		if ($this->id!='') {
 			$this->maxLevelcat = 1;			
@@ -112,15 +112,13 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 	
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
-
-		$query = $db->getQuery(true);
 		$total = $db->loadResult();
 
 		if ($total>0)
 		{
 
 		// $app = Factory::getApplication();
-
+		$query = $db->getQuery(true);
 		$query->select( ['a.id', 'a.title', 'a.alias', 'a.introtext', 
 				'a.images',	'a.publish_up' ] )
 				->from($db->quoteName('#__content', 'a'))
@@ -136,29 +134,27 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 
 	function getArticlesByTags($db, $lim0, $lim) 
 	{	$query = $db->getQuery(true);
-		$query->select( ['count(*) as t'] )
-		->from($db->quoteName('#__categories', 'c'))
-		->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm') 
-		." ON m.content_item_id=c.id AND m.type_alias='com_content.category' ")
-		->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm2') 
-		." ON m2.tag_id = m.tag_id AND m2.type_alias='com_content.article' ")
-		->join('INNER', $db->quoteName('#__content', 'a') 
-		." on a.id = m2.content_item_id ")
-		->where(
-			$db->quoteName('c.alias') . ' = ' . $db->quote($this->id)
-			.' AND a.state=1 and a.publish_down<=current_timestamp ');
+		$sql = ' count(*) as t from (select a.id as t from  #__categories c '."\n"
+		.' join #__contentitem_tag_map m  '."\n"
+		." 	 on m.content_item_id=c.id AND m.type_alias='com_content.category'"."\n"
+		.' join #__contentitem_tag_map m2 '."\n"
+		."   on m2.tag_id = m.tag_id AND m2.type_alias='com_content.article'"."\n"
+		.' join #__content a on a.id = m2.content_item_id '."\n"
+		.' where c.alias = '.$db->quote($this->id)."\n"
+		.' AND a.state=1 and a.publish_down<=current_timestamp '."\n" 
+		.' group by a.id) as y';
+
+		$query->select($sql);
 	
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
-
-		$query = $db->getQuery(true);
 		$total = $db->loadResult();
 
 		if ($total>0)
 		{
 
 		/*		
-				select 
+			select 
 			a.id,
 			a.title,
 			a.alias,    
@@ -176,8 +172,8 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		*/
 
 		// $app = Factory::getApplication();
-
-		$query->select( ['a.id', 'a.title', 'a.alias', 'a.introtext', 
+		$query = $db->getQuery(true);
+		$query->select( ['DISTINCT a.id', 'a.title', 'a.alias', 'a.introtext', 
 				'a.images',	'a.publish_up' ] )
 				->from($db->quoteName('#__categories', 'c'))
 				->join('INNER', $db->quoteName('#__contentitem_tag_map', 'm') 
@@ -211,19 +207,22 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		{
 			$query = $db->getQuery(true);		
 			$db->setQuery('select count(*) from #__contentitem_tag_map '
-			." where content_item_id=".$db->quote($this->category->id)." AND type_alias='com_content.category'");
+			." where content_item_id=".$db->quote($this->category->id)
+			." AND type_alias='com_content.category'"
+			.' AND tag_id<>'.$db->quote( $this->params->get('tags') )
+			);
 			$tag_count = $this->category = $db->loadResult();
+			
 			
 			
 			// Create a new query object.
 			$lim	= 7; // $app->getUserStateFromRequest("$option.limit", 'limit', 14, 'int'); //I guess getUserStateFromRequest is for session or different reasons
 			$lim0	= JRequest::getVar('limitstart', 0, '', 'int');
-			
+						
 			if ($tag_count>0)
 			{	$total = $this->getArticlesByTags($db, $lim0, $lim);
 			} else
-			{
-				$total = $this->getAllArticles($db, $lim0, $lim);
+			{	$total = $this->getAllArticles($db, $lim0, $lim);
 			}
 									
 			// if (empty($rL)) {$jAp->enqueueMessage($db->getErrorMsg(),'error'); return;}	
@@ -338,8 +337,8 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		}
 	  
 			
-		$this->document->addScript(Juri::base()."media/com_categories_intro/js/categories_intro.js?v2");
-		$this->document->addStyleSheet(Juri::base()."media/com_categories_intro/css/categories_intro.css?v8");
+		$this->document->addScript(Juri::base()."media/com_categories_intro/js/categories_intro.js?v6");
+		$this->document->addStyleSheet(Juri::base()."media/com_categories_intro/css/categories_intro.css?v11");
 		$this->task = $app->input->get('task');
 		$this->id = $app->input->get('id');
 		$this->view = $app->input->get('view');

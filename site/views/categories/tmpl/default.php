@@ -35,7 +35,7 @@ echo  '<h1 class="item_title">'.JFactory::getApplication()->getMenu()->getActive
     {  	?>			
 				<div class="category-item"> 					
 					<?php
-						if ($img->src!=='')
+						if (isset($img->src) && $img->src!=='')
 						{					
 							echo '<img  data-src="'.$img->src.'" id="fimgx'.$img->id
 							.'" src="'.$img->resized.'" alt="'

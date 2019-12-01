@@ -29,8 +29,13 @@
  .articles > .article  img {
       max-width: 40%;
       max-height: 200px; 
-      float: left;
-      padding-right: 15pt;     
+      float: left;      
+      padding-right: 15pt;
+      cursor: pointer;     
+ }
+
+ .articles > .article h3 {
+     cursor: pointer;
  }
 
  .articles > .article a.btn {
@@ -45,4 +50,10 @@
 {
     padding-left: 0;
     padding-right: 10pt;
+}
+
+.articles > .article .date 
+{
+    padding-bottom: 5pt;
+    font-style: italic;
 }

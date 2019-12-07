@@ -108,8 +108,9 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		$query = $db->getQuery(true);
 		$query->select( ['count(*) as t'] )
 		->from($db->quoteName('#__content', 'a'))
-		->where(' a.state=1 and a.publish_down<=current_timestamp ');
-	
+		->where(' a.state=1 and a.publish_down<=current_timestamp and '
+			.$db->quote($this->params->get('category'))
+		);
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
 		$total = $db->loadResult();

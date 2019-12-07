@@ -7,7 +7,7 @@
     </layout>
     <fields name="params">
         <fieldset name="basic" label="COM_CATEGORIES_INTRO">
-            <field name="tags" type="tag" label="JTAG" description="JTAG_DESC" mode="ajax" class="inputbox span12 small" multiple="false" />
+            <field name="tags" type="tag" label="COM_CATEGORIES_INTRO_TAG" description="COM_CATEGORIES_INTRO_TAG_DESC" mode="ajax" class="inputbox span12 small" multiple="false" />
             <field name="resizeimage" 
 				type="list"
 				label="COM_CATEGORIES_RESIZEIMAGE"

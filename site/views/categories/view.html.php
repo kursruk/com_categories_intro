@@ -122,7 +122,9 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		$query->select( ['a.id', 'a.title', 'a.alias', 'a.introtext', 
 				'a.images',	'a.publish_up' ] )
 				->from($db->quoteName('#__content', 'a'))
-				->where(' a.state=1 and a.publish_down<=current_timestamp ')
+				->where(' a.state=1 and a.publish_down<=current_timestamp and a.catid='
+					.$db->quote($this->params->get('category') ) 
+				)
 				->order(' a.publish_up desc')
 				->setLimit($lim, $lim0); // limit, offset
 			

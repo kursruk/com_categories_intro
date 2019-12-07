@@ -18,6 +18,11 @@
 			</field>
             <field name="columnmargin" type="number" label="COM_CATEGORIES_COLUMN_MARGIN" description="COM_CATEGORIES_COLUMN_MARGIN" default="8" />
             <field name="imagewidth" type="number" label="COM_CATEGORIES_IMAGE_WIDTH" description="COM_CATEGORIES_IMAGE_WIDTH" default="300" />
+            <field name="category" type="category" label="COM_CATEGORIES_INTRO_DEFAULT_CATEGORY"
+                description="COM_CATEGORIES_INTRO_DEFAULT_CATEGORY_DESC" extension="com_content"
+                multiple="false"
+            >                
+            </field>
         </fieldset>
     </fields>
 </metadata>

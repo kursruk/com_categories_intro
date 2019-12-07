@@ -104,14 +104,16 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 	}
 
 	function getAllArticles ($db, $lim0, $lim) 
-	{
+	{	$catid = 1*$this->params->get('category');
+		if ($catid!='') $catid = ' and a.catid='.$catid;
 		$query = $db->getQuery(true);
 		$query->select( ['count(*) as t'] )
 		->from($db->quoteName('#__content', 'a'))
-		->where(' a.state=1 and a.publish_down<=current_timestamp and '
-			.$db->quote($this->params->get('category'))
-		);
+		->where(' a.state=1 and a.publish_down<=current_timestamp '.$catid);
 		// Reset the query using our newly populated query object.
+		
+		//echo $query->dump();
+		//exit(0);
 		$db->setQuery($query);
 		$total = $db->loadResult();
 
@@ -123,9 +125,7 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 		$query->select( ['a.id', 'a.title', 'a.alias', 'a.introtext', 
 				'a.images',	'a.publish_up' ] )
 				->from($db->quoteName('#__content', 'a'))
-				->where(' a.state=1 and a.publish_down<=current_timestamp and a.catid='
-					.$db->quote($this->params->get('category') ) 
-				)
+				->where(' a.state=1 and a.publish_down<=current_timestamp '.$catid )
 				->order(' a.publish_up desc')
 				->setLimit($lim, $lim0); // limit, offset
 			
@@ -203,7 +203,7 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 
 		// Find the Category
 		$query = $db->getQuery(true);		
-		$db->setQuery('select id, title from #__categories where alias='.$db->quote($this->id));	
+		$db->setQuery('select id, title, metadesc from #__categories where alias='.$db->quote($this->id));	
 		$this->category = $db->loadObject();
 
 		if (!empty($this->category))
@@ -214,7 +214,11 @@ class Categories_introViewCategories extends \Joomla\CMS\MVC\View\HtmlView
 			." AND type_alias='com_content.category'"
 			.' AND tag_id<>'.$db->quote( $this->params->get('tags') )
 			);
-			$tag_count = $this->category = $db->loadResult();
+			$tag_count = $db->loadResult();
+
+			if ($this->category->title!='') $this->document->setTitle($this->category->title);
+			if ($this->category->metadesc!='') $this->document->setDescription($this->category->metadesc);
+			// $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
 			
 			
 			
